@@ -1,4 +1,4 @@
-package com.dps0340.packetsniffer.Network;
+package com.dps0340.packetAnalyzer.Network;
 
 import java.net.NetworkInterface;
 

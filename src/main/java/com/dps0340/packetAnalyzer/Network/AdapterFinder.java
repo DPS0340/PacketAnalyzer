@@ -1,4 +1,4 @@
-package com.dps0340.packetsniffer.Network;
+package com.dps0340.packetAnalyzer.Network;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -19,7 +19,10 @@ public class AdapterFinder {
     }
 
     public static void main(String[] args) {
-        
+        AdapterFinder adapterFinder = new AdapterFinder();
+        for(NetworkInterface networkInterface : adapterFinder.getList()) {
+            System.out.println(networkInterface.getName());
+        }
     }
 
     public ArrayList<NetworkInterface> getList() {

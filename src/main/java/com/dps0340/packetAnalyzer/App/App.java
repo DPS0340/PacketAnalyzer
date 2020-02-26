@@ -1,4 +1,4 @@
-package com.dps0340.packetsniffer;
+package com.dps0340.packetAnalyzer.App;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
