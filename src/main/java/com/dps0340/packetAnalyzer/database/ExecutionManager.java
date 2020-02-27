@@ -63,7 +63,6 @@ public class ExecutionManager implements Callable {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        } finally{
         }
     }
 }
