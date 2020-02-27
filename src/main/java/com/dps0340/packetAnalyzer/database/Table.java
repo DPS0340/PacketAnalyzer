@@ -8,6 +8,8 @@ public class Table {
 
     private ExecutionManager executionManager = null;
     private String tableName = null;
+    private String query = null;
+    private Collection<?> values = null;
 
     public Table(String tableName) {
         this.tableName = tableName;
@@ -53,14 +55,23 @@ public class Table {
     }
 
     public ResultSet exec(String query, Collection<?> values) {
-        executionManager.promiseExec(query, values);
-        ResultSet resultSet = executionManager.call();
-
-        return resultSet;
+        this.query = query;
+        this.values = values;
+        return exec();
     }
 
     public ResultSet exec(String query) {
-        executionManager.promiseExec(query);
+        this.query = query;
+        this.values = null;
+        return exec();
+    }
+    public ResultSet exec(Collection<?> values) {
+        this.values = values;
+        return exec();
+    }
+
+    public ResultSet exec() {
+        executionManager.promiseExec(query, values);
         ResultSet resultSet = executionManager.call();
         return resultSet;
     }

@@ -11,7 +11,7 @@ public class ConnectionManager {
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
     private Connection connection = null;
-    private String dbName = "";
+    private String dbName = null;
 
     public ConnectionManager() throws SQLException, ClassNotFoundException {
         Class.forName(JDBC_DRIVER);
