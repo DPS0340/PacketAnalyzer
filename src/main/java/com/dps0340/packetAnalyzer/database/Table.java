@@ -20,6 +20,11 @@ public class Table {
 
     public Table(String tableName, String dbName) {
         this.tableName = tableName;
+        try {
+            executionManager = new ExecutionManager(dbName);
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public int getLength() {
