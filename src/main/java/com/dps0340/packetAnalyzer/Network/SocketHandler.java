@@ -1,10 +1,13 @@
 package com.dps0340.packetAnalyzer.Network;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.charset.Charset;
 
 public class SocketHandler {
 
@@ -76,5 +79,31 @@ public class SocketHandler {
 
     public String getAddress() {
         return address;
+    }
+
+    public InputStreamReader getInputStreamReader() {
+        return getInputStreamReader("UTF-8");
+    }
+
+    public InputStreamReader getInputStreamReader(String encoding) {
+        try {
+            return new InputStreamReader(socket.getInputStream(), Charset.forName(encoding));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public OutputStreamWriter getOutputStreamWriter() {
+        return getOutputStreamWriter("UTF-8");
+    }
+
+    public OutputStreamWriter getOutputStreamWriter(String encoding) {
+        try {
+            return new OutputStreamWriter(socket.getOutputStream(), Charset.forName(encoding));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
