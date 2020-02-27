@@ -35,6 +35,7 @@ public class ExecutionManager implements Callable {
 
     public void promiseExec(String query) {
         setQuery(query);
+        values = null;
     }
 
     public void promiseExec(String query, Collection<?> values) {
@@ -47,8 +48,8 @@ public class ExecutionManager implements Callable {
         if(connectionManager == null || query == null) {
             throw new NullPointerException();
         }
-        connection = connectionManager.getConnection();
         try {
+            connection = connectionManager.getConnection();
             preparedStatement = connection.prepareStatement(query);
             if(values != null) {
                 int cnt = 1;
@@ -58,33 +59,11 @@ public class ExecutionManager implements Callable {
                 }
             }
             resultSet = preparedStatement.executeQuery();
-
             return resultSet;
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         } finally{
-            if(preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch(SQLException e){
-                    e.printStackTrace();
-                }
-            };
-            if(resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch(SQLException e){
-                    e.printStackTrace();
-                }
-            };
-            if(connection != null) {
-                try {
-                    connection.close();
-                } catch(SQLException e){
-                    e.printStackTrace();
-                }
-            };
         }
     }
 }

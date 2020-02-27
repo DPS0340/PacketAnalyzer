@@ -2,7 +2,7 @@ package com.dps0340.packetAnalyzer.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collection;
 
 public class Table {
 
@@ -28,16 +28,15 @@ public class Table {
     }
 
     public int getLength() {
-        executionManager.promiseExec("SELECT COUNT(*) FROM ?", new ArrayList<String>() {
-            {
-                add(tableName);
-            }
-        });
-        ResultSet resultSet = executionManager.call();
+        executionManager.promiseExec("SELECT COUNT(*) FROM " + tableName + ";");
         try {
-            int result = resultSet.getInt(0);
-            return result;
-        } catch (SQLException e) {
+            ResultSet resultSet = executionManager.call();
+            if(resultSet.next()) {
+                int result = resultSet.getInt(1);
+                return result;
+            }
+            return -1;
+        } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
             return -1;
         }
@@ -45,9 +44,32 @@ public class Table {
 
     public int nextInt() {
         int length = getLength();
-        if (length == -1) {
-            return -1;
-        }
         return length + 1;
+    }
+
+    public void drop() {
+        executionManager.promiseExec("DROP TABLE " + tableName + ";");
+        executionManager.call();
+    }
+
+    public ResultSet exec(String query, Collection<?> values) {
+        executionManager.promiseExec(query, values);
+        ResultSet resultSet = executionManager.call();
+
+        return resultSet;
+    }
+
+    public ResultSet exec(String query) {
+        executionManager.promiseExec(query);
+        ResultSet resultSet = executionManager.call();
+        return resultSet;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 }
