@@ -1,23 +1,30 @@
 package com.dps0340.packetAnalyzer.Network;
 
 import org.pcap4j.core.*;
-import org.pcap4j.core.PcapNetworkInterface.PromiscuousMode;
 import org.pcap4j.packet.Packet;
-import org.pcap4j.util.NifSelector;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 
 
-public class PacketAnalyzer {
+public class PacketAnalyzer implements Runnable {
     private PcapNetworkInterface pcapNetworkInterface = null;
+    private ByteArrayOutputStream byteArrayOutputStream = null;
+    private int snapshotLength = 65536;
+    private int readTimeout = 60;
 
-    public void initNetworkDevice() {
-        try {
-            pcapNetworkInterface = new NifSelector().selectNetworkInterface();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public PacketAnalyzer(String networkInterfaceName) throws SocketException, PcapNativeException {
+        NetworkInterface networkInterface = NetworkInterface.getByName(networkInterfaceName);
+        pcapNetworkInterface = Pcaps.getDevByAddress(
+                networkInterface
+                        .getInetAddresses()
+                        .nextElement()
+        );
+        byteArrayOutputStream = new ByteArrayOutputStream();
     }
+
 
     public void setNetworkDevice(PcapNetworkInterface pcapNetworkInterface) {
         this.pcapNetworkInterface = pcapNetworkInterface;
@@ -27,34 +34,29 @@ public class PacketAnalyzer {
         return pcapNetworkInterface;
     }
 
-    public static void main(String[] args) throws PcapNativeException, NotOpenException {
-        PacketAnalyzer packetAnalyzer = new PacketAnalyzer();
-
-        packetAnalyzer.initNetworkDevice();
-        if (packetAnalyzer.pcapNetworkInterface == null) {
-            System.out.println("장치가 없습니다.");
-            System.exit(1);
-        }
-
-        int snapshotLength = 65536;
-        int readTimeout = 60;          
-        PcapHandle handle = packetAnalyzer.pcapNetworkInterface.openLive(snapshotLength, PromiscuousMode.PROMISCUOUS, readTimeout);
-        PacketListener listener = new PacketListener() {
-            @Override
-            public void gotPacket(Packet packet) {
-                System.out.println(handle.getTimestamp());
-                System.out.println(packet);
-            }
-        };
-
-        try {
-            int maxPackets = 50;
-            handle.loop(maxPackets, listener);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        handle.close();
+    public ByteArrayOutputStream getByteArrayOutputStream() {
+        return byteArrayOutputStream;
     }
 
+    @Override
+    public void run() {
+        try {
+            PcapHandle handle = pcapNetworkInterface.openLive(snapshotLength, PcapNetworkInterface.PromiscuousMode.PROMISCUOUS, readTimeout);
+            PacketListener listener = new PacketListener() {
+                @Override
+                public void gotPacket(Packet packet) {
+                    try {
+                        byteArrayOutputStream.write(handle.getTimestamp().toString().getBytes());
+                        byteArrayOutputStream.write(packet.toString().getBytes());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            int maxPackets = 50;
+            handle.loop(maxPackets, listener);
+        } catch (InterruptedException | PcapNativeException | NotOpenException e) {
+            e.printStackTrace();
+        }
+    }
 }
