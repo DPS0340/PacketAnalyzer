@@ -64,7 +64,6 @@
 		<artifactId>json</artifactId>
 		<version>20190722</version>
 	</dependency>
-
 	</dependencies>
 
 	<build>
