@@ -9,10 +9,6 @@ class Index extends React.Component {
         this.state = {apiResponse: ""};
     }
 
-    state = {
-        apiResponse: null
-    };
-
     callAPI() {
         fetch("http://localhost:8888/testapi")
             .then(res => res.text())
