@@ -12,6 +12,6 @@ import java.util.Map;
 public class JsonController {
     @RequestMapping(value = "/getdata", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public String getData(@RequestBody Map<String, String> body) {
-        return new JSONObject(body).toString();
+        return new JSONObject(body).toString(); // Change TODO
     }
 }
